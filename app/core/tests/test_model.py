@@ -47,3 +47,12 @@ class ModelTests(TestCase):
             name = 'Vegan')
 
         self.assertEqual(str(tag), tag.name)
+
+    def test_ingredient_str(self):
+        """"test les ingredinent chainne"""
+        ingredient=models.Ingredient.objects.create(
+            user=sample_user(),
+            name='farine'
+            )
+
+        self.assertEquals(str(ingredient), ingredient.name)
