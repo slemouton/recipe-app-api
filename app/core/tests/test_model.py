@@ -56,3 +56,13 @@ class ModelTests(TestCase):
             )
 
         self.assertEquals(str(ingredient), ingredient.name)
+
+    def test_recipe_str(self):
+        """test la represetnation en chaine de caractere de l'objet recette"""
+        recipe=models.Recipe.objects.create(
+            user=sample_user(),
+            title='nockedli',
+            time_minutes = 5,
+            price=5.00)
+
+        self.assertEqual(str(recipe),recipe.title)
