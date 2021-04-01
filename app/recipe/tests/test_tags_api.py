@@ -70,8 +70,8 @@ class PrivateTagsApiTests(TestCase):
 
     def test_retrive_tags_asssigned_to_recipes(self):
         """Test filtering tags by thiose assigned to recipes"""
-        tag1 = Tag.objects.create(uesr=self.user, name='Breakfast')
-        tag2 = Tag.objects.create(uesr=self.user, name='Lunch')
+        tag1 = Tag.objects.create(user=self.user, name='Breakfast')
+        tag2 = Tag.objects.create(user=self.user, name='Lunch')
         recipe = Recipe.objects.create(
             title='scrambled eggs',
             time_minutes=10,
@@ -79,36 +79,30 @@ class PrivateTagsApiTests(TestCase):
             user=self.user
         )
         recipe.tags.add(tag1)
-        res = self.client.post(TAGS_URL, {'assigned_only':1})
+        res = self.client.get(TAGS_URL, {'assigned_only': 1})
         serializer1 = TagSerializer(tag1)
         serializer2 = TagSerializer(tag2)
-            
+
         self.assertIn(serializer1.data, res.data)
         self.assertNotIn(serializer2.data, res.data)
 
     def test_retrice_tags_assignde_unqie(self):
-        tag1 = Tag.objects.create(uesr=self.user, name='Breakfast')
-        Tag.objects.create(uesr=self.user, name='Lunch')
+        tag = Tag.objects.create(user=self.user, name='Breakfast')
+        Tag.objects.create(user=self.user, name='Lunch')
         recipe1 = Recipe.objects.create(
             title='scrambled eggs',
             time_minutes=10,
             price=1,
             user=self.user
         )
-        recipe1.tags.add(tag1)
-       recipe2 = Recipe.objects.create(
+        recipe1.tags.add(tag)
+        recipe2 = Recipe.objects.create(
             title='corn flakes',
             time_minutes=10,
             price=1,
             user=self.user
         )
-        recipe2.tags.add(tag1)
-        res = self.client.post(TAGS_URL, {'assigned_only':1})
+        recipe2.tags.add(tag)
+        res = self.client.get(TAGS_URL, {'assigned_only': 1})
 
-         self.assertEqual(len(res.data), 1)
-
-
-
-
-
-
+        self.assertEqual(len(res.data), 1)
