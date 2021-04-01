@@ -8,6 +8,7 @@ def sample_user(email='lemouton@ircam.fr', password='123456'):
     """cree un utilisateur de test"""
     return get_user_model().objects.create_user(email, password)
 
+
 class ModelTests(TestCase):
 
     def test_create_user_with_email_succesful(self):
@@ -17,7 +18,7 @@ class ModelTests(TestCase):
         user = get_user_model().objects.create_user(
             email=email,
             password=password
-            )
+        )
 
         self.assertEqual(user.email, email)
         self.assertTrue(user.check_password(password))
@@ -38,40 +39,40 @@ class ModelTests(TestCase):
         user = get_user_model().objects.create_superuser(
             'test@x.fr',
             'test123'
-            )
+        )
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
 
     def test_tag_str(self):
         tag = models.Tag.objects.create(
             user=sample_user(),
-            name = 'Vegan')
+            name='Vegan')
 
         self.assertEqual(str(tag), tag.name)
 
     def test_ingredient_str(self):
         """"test les ingredinent chainne"""
-        ingredient=models.Ingredient.objects.create(
+        ingredient = models.Ingredient.objects.create(
             user=sample_user(),
             name='farine'
-            )
+        )
 
         self.assertEquals(str(ingredient), ingredient.name)
 
     def test_recipe_str(self):
         """test la represetnation en chaine de caractere de l'objet recette"""
-        recipe=models.Recipe.objects.create(
+        recipe = models.Recipe.objects.create(
             user=sample_user(),
             title='nockedli',
-            time_minutes = 5,
+            time_minutes=5,
             price=5.00)
 
-        self.assertEqual(str(recipe),recipe.title)
+        self.assertEqual(str(recipe), recipe.title)
 
-    @patch ('uuid.uuid4')
+    @patch('uuid.uuid4')
     def test_recipe_filenme_uuid(self, mock_uuid):
         """test that image is saved in the correct location"""
-        uuid ='test-uuid'
+        uuid = 'test-uuid'
         mock_uuid.return_value = uuid
         file_path = models.recipe_image_file_path(None, 'myimage.jpg')
 

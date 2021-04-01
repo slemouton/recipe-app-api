@@ -13,12 +13,14 @@ TAGS_URL = reverse('recipe:tag-list')
 
 class PublicTagsApiTests(TestCase):
     """ test les tag public"""
+
     def setUp(self):
         self.client = APIClient()
 
     def test_login_required(self):
         res = self.client.get(TAGS_URL)
-        self.assertEqual(res.status_code,status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
 
 class PrivateTagsApiTests(TestCase):
     def setUp(self):
@@ -30,29 +32,29 @@ class PrivateTagsApiTests(TestCase):
 
     def test_retrieve_tags(self):
         """test retrieving tags"""
-        Tag.objects.create(user=self.user, name = "Vegetarien")
-        Tag.objects.create(user=self.user, name = "dessert")
+        Tag.objects.create(user=self.user, name="Vegetarien")
+        Tag.objects.create(user=self.user, name="dessert")
         res = self.client.get(TAGS_URL)
 
         tags = Tag.objects.all().order_by('-name')
         serializer = TagSerializer(tags, many=True)
-        self.assertEqual (res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
 
     def test_tags_limited_to_user(self):
-        user2 = get_user_model().objects.create_user('autre@a.fr','1234444444')
-        tag = Tag.objects.create(user=user2,name="Fruits")
-        Tag.objects.create(user=self.user, name = "dessert")
+        user2 = get_user_model().objects.create_user('autre@a.fr', '1234444444')
+        tag = Tag.objects.create(user=user2, name="Fruits")
+        Tag.objects.create(user=self.user, name="dessert")
         res = self.client.get(TAGS_URL)
 
-        self.assertEqual(res.status_code,status.HTTP_200_OK)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 1)
         self.assertNotEqual(res.data[0]['name'], tag.name)
 
     def test_create_tag_successful(self):
         """test creation d'un tag"""
         payload = {'name': 'Test Tag'}
-        self.client.post(TAGS_URL,payload)
+        self.client.post(TAGS_URL, payload)
 
         exists = Tag.objects.filter(
             user=self.user,
@@ -64,7 +66,4 @@ class PrivateTagsApiTests(TestCase):
         payload = {'name': ''}
         res = self.client.post(TAGS_URL, payload)
 
-        self.assertEqual(res.status_code,status.HTTP_400_BAD_REQUEST)
-
-
-
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
