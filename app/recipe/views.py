@@ -7,10 +7,7 @@ from core.models import Tag, Ingredient, Recipe
 from recipe import serializers
 
 
-class BaseRecipeAttrViewSet(
-        viewsets.GenericViewSet,
-        mixins.ListModelMixin,
-        mixins.CreateModelMixin):
+class BaseRecipeAttrViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin):
     """Base view set for user owned recipe attributes"""
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
@@ -55,23 +52,22 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return serializers.RecipeImageSerializer
         return self.serializer_class
 
-
     def perform_create(self, serializer):
         """create a new recipe"""
         serializer.save(user=self.request.user)
 
-    @action(methods = ['POST'], detail=True, url_path='upload-image')
+    @action(methods=['POST'], detail=True, url_path='upload-image')
     def upload_image(self, request, pk=None):
         """uplaod an image to a recipe"""
-        recipe =self.get_object()
+        recipe = self.get_object()
         serializer = self.get_serializer(
             recipe,
             data=request.data
-            )
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(
-                serializer.data, 
-                status= status.HTTP_200_OK)
+                serializer.data,
+                status=status.HTTP_200_OK)
         return Response(serializer.errors,
-            status = status.HTTP_400_BAD_REQUEST)
+                        status=status.HTTP_400_BAD_REQUEST)
