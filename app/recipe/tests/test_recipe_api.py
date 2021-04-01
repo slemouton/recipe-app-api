@@ -16,7 +16,8 @@ RECIPES_URL = reverse('recipe:recipe-list')
 
 def image_upload_url(recipe_id):
     """return url for recipe image upload"""
-    return reverse ('recipe:recipe-upload-image', args=[recipe_id])
+    return reverse('recipe:recipe-upload-image', args=[recipe_id])
+
 
 def detail_url(recipe_id):
     """retuens recipe detail urL"""
@@ -28,7 +29,7 @@ def sample_recipe(user, **params):
     defaults = {
         'title': 'sampleRecipe',
         'time_minutes': 5,
-        'price': 5.05,
+        'price': 5,
     }
     defaults.update(params)
 
@@ -181,6 +182,7 @@ class PrivatRecipeApiTest(TestCase):
         tags = recipe.tags.all()
         self.assertEqual(len(tags), 0)
 
+
 class RecipeImageUploatdTests(TestCase):
     def setUp(self):
         self.client = APIClient()
@@ -198,17 +200,17 @@ class RecipeImageUploatdTests(TestCase):
         url = image_upload_url(self.recipe.id)
         with tempfile.NamedTemporaryFile(suffix='.jpg') as ntf:
             img = Image.new('RGB', (10, 10))
-            img.save(ntf,format='JPEG')
+            img.save(ntf, format='JPEG')
             ntf.seek(0)
-            res = self.client.post(url,{'image':ntf}, format='multipart')
+            res = self.client.post(url, {'image':ntf}, format='multipart')
         self.recipe.refresh_from_db()
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertIn('image', res.data)
-        self.assertTrue(os.patf.exists(self.recipe.image.path))
+        self.assertTrue(os.path.exists(self.recipe.image.path))
 
     def test_upload_image_bad_request(self):
         """test uplaoding an unvalid image"""
         url = image_upload_url(self.recipe.id)
-        res =self.client.post(url,{'image': 'notimage'}, format='multipart')
-        self.assertEqual(res.status_code,status.HTTP_400_BAD_REQUEST)
+        res = self.client.post(url, {'image': 'notimage'}, format='multipart')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
