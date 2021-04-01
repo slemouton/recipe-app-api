@@ -11,7 +11,7 @@ from core.models import Recipe, Tag, Ingredient
 
 from recipe.serializers import RecipeSerializer, RecipeDetailSerializer
 
-RECIPES_URL = reverse('recipe:recipe-list',args=[])
+RECIPES_URL = reverse('recipe:recipe-list')
 
 
 def image_upload_url(recipe_id):
@@ -20,7 +20,7 @@ def image_upload_url(recipe_id):
 
 def detail_url(recipe_id):
     """retuens recipe detail urL"""
-    return reverse('recipe:recipe-detail-image', args=[recipe_id])
+    return reverse('recipe:recipe-detail', args=[recipe_id])
 
 
 def sample_recipe(user, **params):
@@ -195,7 +195,7 @@ class RecipeImageUploatdTests(TestCase):
 
     def test_uplaod_imges_to_recipe(self):
         """test uploading image"""
-        url = image_upload_url(self.recipe_id)
+        url = image_upload_url(self.recipe.id)
         with tempfile.NamedTemporaryFile(suffix='.jpg') as ntf:
             img = Image.new('RGB', (10, 10))
             img.save(ntf,format='JPEG')
@@ -208,7 +208,7 @@ class RecipeImageUploatdTests(TestCase):
 
     def test_upload_image_bad_request(self):
         """test uplaoding an unvalid image"""
-        url = image_upload_url(self.recipe_id)
+        url = image_upload_url(self.recipe.id)
         res =self.client.post(url,{'image': 'notimage'}, format='multipart')
-        self.assertEqual(res.status_code,status.HTTP_400_UNAUTHORIZED)
+        self.assertEqual(res.status_code,status.HTTP_400_BAD_REQUEST)
 
